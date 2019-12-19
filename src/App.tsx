@@ -3,18 +3,19 @@ import produce from "immer";
 
 import "./app.css";
 
-const numRows = 10;
-const numCols = 10;
+const numRows = 2;
+const numCols = 2;
+const gridSize = 25;
 
-const operations = [
-  [0, 1],
-  [0, -1],
-  [1, -1],
-  [-1, 1],
-  [1, 1],
+const cells = [
   [-1, -1],
+  [-1, 0],
+  [-1, 1],
+  [0, -1],
+  [0, 1],
+  [1, -1],
   [1, 0],
-  [-1, 0]
+  [1, 1]
 ];
 
 const generateEmptyGrid = () => {
@@ -31,7 +32,6 @@ const App: React.FC = () => {
   });
 
   const [running, setRunning] = useState(false);
-
   const runningRef = useRef(running);
   runningRef.current = running;
   const runSimulation = useCallback(() => {
@@ -39,17 +39,21 @@ const App: React.FC = () => {
       return;
     }
     console.log("gen");
-    setGrid(function(g) {
+
+    setGrid(g => {
       return produce(g, gridCopy => {
         for (let i = 0; i < numRows; i++) {
           for (let k = 0; k < numCols; k++) {
             let neighbors = 0;
-            operations.forEach(([x, y]) => {
+            console.log("Клетка", i, k);
+            cells.forEach(([x, y]) => {
               const newI = i + x;
               const newK = k + y;
               if (newI >= 0 && newI < numRows && newK >= 0 && newK < numCols) {
                 neighbors += g[newI][newK];
+                console.log("SOSED g[newI][newK]", g[newI][newK]);
               }
+              console.log("neigboars", neighbors);
             });
 
             if (neighbors < 2 || neighbors > 3) {
@@ -62,7 +66,7 @@ const App: React.FC = () => {
       });
     });
 
-    setTimeout(runSimulation, 100);
+    setTimeout(runSimulation, 3000);
   }, []);
 
   return (
@@ -105,7 +109,7 @@ const App: React.FC = () => {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: `repeat(${numCols}, 20px)`
+          gridTemplateColumns: `repeat(${numCols}, ${gridSize}px)`
         }}
         className="cell-grid"
       >
@@ -120,12 +124,15 @@ const App: React.FC = () => {
                 setGrid(newGrid);
               }}
               style={{
-                width: 20,
-                height: 20,
+                width: gridSize,
+                height: gridSize,
                 backgroundColor: grid[i][k] ? "blue" : undefined,
                 border: "solid 1px black"
               }}
-            />
+            >
+              {i}
+              {k}
+            </div>
           ))
         )}
       </div>
