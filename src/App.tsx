@@ -3,9 +3,9 @@ import produce from "immer";
 
 import "./app.css";
 
-const numRows = 2;
-const numCols = 2;
-const gridSize = 25;
+const numRows = 8;
+const numCols = 8;
+const gridSize = 45;
 
 const cells = [
   [-1, -1],
@@ -38,22 +38,18 @@ const App: React.FC = () => {
     if (!runningRef.current) {
       return;
     }
-    console.log("gen");
-
     setGrid(g => {
-      return produce(g, gridCopy => {
+      return produce(g, (gridCopy: number[][]) => {
         for (let i = 0; i < numRows; i++) {
           for (let k = 0; k < numCols; k++) {
             let neighbors = 0;
-            console.log("Клетка", i, k);
+
             cells.forEach(([x, y]) => {
               const newI = i + x;
               const newK = k + y;
               if (newI >= 0 && newI < numRows && newK >= 0 && newK < numCols) {
                 neighbors += g[newI][newK];
-                console.log("SOSED g[newI][newK]", g[newI][newK]);
               }
-              console.log("neigboars", neighbors);
             });
 
             if (neighbors < 2 || neighbors > 3) {
@@ -66,7 +62,7 @@ const App: React.FC = () => {
       });
     });
 
-    setTimeout(runSimulation, 3000);
+    setTimeout(runSimulation, 200);
   }, []);
 
   return (
@@ -118,7 +114,7 @@ const App: React.FC = () => {
             <div
               key={`${i}-${k}`}
               onClick={() => {
-                const newGrid = produce(grid, gridCopy => {
+                const newGrid = produce(grid, (gridCopy: number[][]) => {
                   gridCopy[i][k] = grid[i][k] ? 0 : 1;
                 });
                 setGrid(newGrid);
@@ -126,7 +122,7 @@ const App: React.FC = () => {
               style={{
                 width: gridSize,
                 height: gridSize,
-                backgroundColor: grid[i][k] ? "blue" : undefined,
+                backgroundColor: grid[i][k] ? "DimGrey" : undefined,
                 border: "solid 1px black"
               }}
             >
